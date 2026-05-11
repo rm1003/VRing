@@ -9,12 +9,12 @@ RM = rm -f
 SRC_DIR  = ../../src
 OBJ_COMUM = $(SRC_DIR)/smpl.o $(SRC_DIR)/rand.o
 
-TASKS = task0
+TASKS = task0 task1 task2 task3 task4
 
 all: $(TASKS)
 
 $(TASKS): %: %.o $(OBJ_COMUM)
-	$(CC) $(LDFLAGS) -o $@ $^
+	$(CC) -o $@ $^ $(LDFLAGS) 
 
 %.o: %.c ../../includes/smpl.h
 	$(CC) $(CFLAGS) -c $< -o $@

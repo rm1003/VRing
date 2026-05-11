@@ -16,8 +16,9 @@ TipoProcesso *processo;
 int main(int argc, char* argv[]) {
 
     static int N, token, event, r, i, MaxTempoSimulac = 150;
-
     static char fa_name[5];
+
+    int tmp;
 
     if (argc != 2) {
         puts("Uso correto: tempo <numero de processos>");
@@ -47,6 +48,7 @@ int main(int argc, char* argv[]) {
         schedule(TEST, 30.0, i); // todos os processos de 0 ate N-1 vao testar na unidade de tempo 30
     }
     schedule(FAULT, 31.0, 1);
+    schedule(FAULT, 31.0, 2);
     schedule(RECOVERY, 61.0, 1);
 
     // agora vem o loop principal do simulador
@@ -55,8 +57,21 @@ int main(int argc, char* argv[]) {
         cause(&event, &token);
         switch(event) {
             case TEST:
-                if (status(processo[token].id) !=0) break; // Processo falho nao testa!
-                printf("Sou o processo %d estou testando no tempo %4.1f\n", token, time());
+                if (status(processo[token].id) != 0) break; // o proprio processo falhou
+                                                             
+                // Testando o processo seguinte
+                tmp = (token + 1) % N;
+                while(status(processo[tmp].id) != 0 && tmp != token) {
+                    printf("Sou o processo %d estou testando o processo %d suspeito no tempo %4.1f\n", token, tmp, time());
+                    tmp = (tmp + 1) % N;
+                }
+                
+                if (tmp == token) {
+                    printf("O processo %d eh o unico processo correto no anel\n", token);
+                } else {
+                    printf("Sou o processo %d estou testando o processo %d correto no tempo %4.1f\n", token, tmp, time());
+                }
+                
                 schedule(TEST, 30.0, token);
                 break;
             case FAULT:

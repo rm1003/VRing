@@ -55,8 +55,14 @@ int main(int argc, char* argv[]) {
         cause(&event, &token);
         switch(event) {
             case TEST:
-                if (status(processo[token].id) !=0) break; // Processo falho nao testa!
-                printf("Sou o processo %d estou testando no tempo %4.1f\n", token, time());
+                if (status(processo[token].id) != 0) break; // o proprio processo falhou
+                                                             
+                // Testando o processo seguinte
+                if (status(processo[(token+1) % N].id) == 0) {
+                    printf("Sou o processo %d estou testando o processo %d correto no tempo %4.1f\n", token, (token+1)%N, time());
+                } else {
+                    printf("Sou o processo %d estou testando o processo %d suspeito no tempo %4.1f\n", token, (token+1)%N, time());
+                }
                 schedule(TEST, 30.0, token);
                 break;
             case FAULT:
