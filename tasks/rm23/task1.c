@@ -26,11 +26,11 @@ int main(int argc, char* argv[]) {
     }
 
     N = atoi(argv[1]);
-
     if (N <= 0) {
         puts("Numero de processos deve ser positivo");
         exit(1);
     }
+
 
     smpl(0, "Meu primeiro programa de simulacao de sistemas distribuidos");
     reset();
@@ -38,8 +38,11 @@ int main(int argc, char* argv[]) {
 
     puts("===============================================================");
     puts("           Sistemas Distribuidos Prof. Elias");
-    puts("          LOG do Trabalho Pratico 0, Tarefa 0");
-    puts("      Digitar, compilar e executar o programa tempo.c");
+    puts("          LOG do Trabalho Pratico 0, Tarefa 1");
+    puts("  Fazer cada um dos processos testar o seguinte no anel.");
+    puts("  Implemente o teste com a função status() do SMPL e imprimir");
+    puts("  (printf) o resultado de cada teste executado. Por exemplo:");
+    puts("  “O processo i testou o processo j correto no tempo tal.”");
     printf("   Este programa foi executado para: N=%d processos.\n", N); 
     printf("           Tempo Total de Simulacao = %d\n", MaxTempoSimulac);
     puts("===============================================================");
@@ -71,15 +74,20 @@ int main(int argc, char* argv[]) {
     }
     schedule(FINISH, MaxTempoSimulac, -1);
 
-
     // agora vem o loop principal do simulador
 
     while(time() < MaxTempoSimulac) {
         cause(&event, &token);
         switch(event) {
             case TEST:
-                if (status(processo[token].id) !=0) break; // Processo falho nao testa!
-                printf("Sou o processo %d estou testando no tempo %4.1f\n", token, time());
+                if (status(processo[token].id) != 0) break; // o proprio processo falhou
+                                                             
+                // Testando o processo seguinte
+                if (status(processo[(token+1) % N].id) == 0) {
+                    printf("Sou o processo %d estou testando o processo %d correto no tempo %4.1f\n", token, (token+1)%N, time());
+                } else {
+                    printf("Sou o processo %d estou testando o processo %d suspeito no tempo %4.1f\n", token, (token+1)%N, time());
+                }
                 schedule(TEST, 30.0, token);
                 break;
             case FAULT:
