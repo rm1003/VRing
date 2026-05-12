@@ -5,6 +5,7 @@
 #define TEST 1
 #define FAULT 2
 #define RECOVERY 3
+#define FINISH 4
 
 typedef struct {
     int id;
@@ -26,14 +27,37 @@ int main(int argc, char* argv[]) {
     }
 
     N = atoi(argv[1]);
+    if (N <= 0) {
+        puts("Numero de processos deve ser positivo");
+        exit(1);
+    }
 
     smpl(0, "Meu primeiro programa de simulacao de sistemas distribuidos");
     reset();
     stream(1);
 
+    puts("===============================================================");
+    puts("           Sistemas Distribuidos Prof. Elias");
+    puts("          LOG do Trabalho Pratico 0, Tarefa 3");
+    puts("  Cada processo mantem localmente o vetor State[N]. A entrada");
+    puts("  do vetor State[j] indica o estado do processo j. O estado de");
+    puts("  cada processo pode ser: -1 (unknown), 0 (correto) ou 1 (falho).");
+    puts("  Inicialize (para todos os processos) o State[N] com -1 (indicando");
+    puts("  estado “unknown”) para todos os demais processos e 0 para o ");
+    puts("  proprio processo. Nesta tarefa ao executar um teste em um");
+    puts("  processo j, o testador atualiza a entrada correspondente no vetor");
+    puts("  State[j]. Em cada intervalo de testes, mostre o vetor State[N].");
+    printf("   Este programa foi executado para: N=%d processos.\n", N); 
+    printf("           Tempo Total de Simulacao = %d\n", MaxTempoSimulac);
+    puts("===============================================================");
+
     // inicializar os N processos
 
     processo = (TipoProcesso*) malloc(sizeof(TipoProcesso)*N);
+    if (processo == NULL) {
+        error(0, "Alocacao invalida nos processos\n");
+        exit(1);
+    }
 
     for (i = 0; i < N; ++i) {
         memset(fa_name, '\0', 5);
@@ -43,18 +67,9 @@ int main(int argc, char* argv[]) {
         for (int j = 0; j < N; ++j) {
             processo[i].states[j] = -1;
         }
+        // inicializa o proprio estado em 0
         processo[i].states[i] = 0;
     }
-
-    /* 
-       for (i = 0; i < N; ++i) {
-       for (int j = 0; j < N; ++j) {
-       printf("%d ", ProcInfo[i][j]);
-       }
-       printf("\n");
-       }
-       */
-
 
     // Vamos agora fazer o escalonamento dos eventos iniciais
     // No primeiro intervalo de testes os processos vao testar
@@ -62,9 +77,15 @@ int main(int argc, char* argv[]) {
     for (i = 0; i < N; ++i) {
         schedule(TEST, 30.0, i); // todos os processos de 0 ate N-1 vao testar na unidade de tempo 30
     }
-    schedule(FAULT, 31.0, 1);
-    schedule(FAULT, 31.0, 2);
-    schedule(RECOVERY, 61.0, 1);
+
+    if (N > 1) {
+        schedule(FAULT, 31.0, 1);
+        schedule(RECOVERY, 61.0, 1);
+    }
+    if (N > 2) {
+        schedule(FAULT, 31.0, 2);
+    }
+    schedule(FINISH, MaxTempoSimulac, -1);
 
     // agora vem o loop principal do simulador
 
@@ -83,7 +104,7 @@ int main(int argc, char* argv[]) {
                 }
                 
                 if (tmp == token) {
-                    printf("O processo %d eh o unico processo correto no anel\n", token);
+                    printf("O processo %d eh o unico processo correto no anel, teste no tempo %4.1f\n", token, time());
                 } else {
                     printf("Sou o processo %d estou testando o processo %d correto no tempo %4.1f\n", token, tmp, time());
                 }
@@ -104,6 +125,9 @@ int main(int argc, char* argv[]) {
                 release(processo[token].id, token);
                 printf("O processo %d recuperou no tempo %4.1f\n", token, time());
                 schedule(TEST, 1.0, token);
+                break;
+            case FINISH:
+                printf("Fim da simulacao no tempo %4.1f\n", time());
                 break;
         } // switch
     } // while
