@@ -1,3 +1,15 @@
+/*
+===============================================================================
+Autor: Ruibin Mei
+Data da ultima modificacao: 17/maio/2026
+Descricao: 
+    Terceiro programa de simulacao da disciplina de Sistemas Distribuidos usando
+smpl.
+    Vamos simular processos i testando processos j no anel virtual ate achar o
+processo correto.
+===============================================================================
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "smpl.h"

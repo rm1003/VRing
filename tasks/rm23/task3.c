@@ -1,3 +1,15 @@
+/*
+===============================================================================
+Autor: Ruibin Mei
+Data da ultima modificacao: 17/maio/2026
+Descricao: 
+    Quarto programa de simulacao da disciplina de Sistemas Distribuidos usando
+smpl.
+    Vamos simular processos i testando processos j no anel virtual e guardando
+localmente um vetor que contem informacoes sobre os processos testados.
+===============================================================================
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "smpl.h"
