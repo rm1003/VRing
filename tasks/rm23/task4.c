@@ -1,3 +1,17 @@
+/*
+===============================================================================
+Autor: Ruibin Mei
+Data da ultima modificacao: 17/maio/2026
+Descricao: 
+    Quinto programa de simulacao da disciplina de Sistemas Distribuidos usando
+smpl.
+    Vamos simular processos i testando processos j no anel virtual e guardando
+localmente um vetor que contem informacoes obtidos dos processos corretos
+testados, ou seja, ideia de VRing e ao achar um processo correto obtem informacoes
+de j, vetor de j.
+===============================================================================
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "smpl.h"
